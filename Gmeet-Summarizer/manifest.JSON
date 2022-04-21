@@ -1,16 +1,15 @@
 {
-    "manifest_version":2,
-    "name":"Meet Script",
+    "manifest_version":3,
+    "name":"Gmeet-Summarizer",
     "version":"1.0",
-    "description":"A google meet supported chrome extension that make notes using Captions",
+    "description":"A google meet supported chrome extension that summarizes the meeting",
     "icons": {
         "128": "round-table.png" 
     },
     "background": {
-        "scripts": ["event.js"],
-        "persistent": false
+        "service_worker": "event.js"
     },
-    "page_action": {
+    "action": {
         "default_popup": "popup.html"
     },
     "content_scripts":[
@@ -20,7 +19,7 @@
         }
     ],
       "permissions":[
-        "tabs","https://meet.google.com/*","storage","notifications"
+        "tabs","storage","notifications"
     ]
 
 }

@@ -88,7 +88,10 @@ def summary(text):
     sentenceValue = gen_rank_sentences_table(text)
     for sentence in sentenceValue:
         sum += sentenceValue[sentence]
-    avg = int(sum / len(sentenceValue))
+    try:
+        avg = int(sum / len(sentenceValue))
+    except:
+        pass
     summary = ""
     sentences = Stokenize(text)
     for sentence in sentences:

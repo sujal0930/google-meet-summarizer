@@ -1,6 +1,4 @@
-'''
-NLTK MODEL CODE
-''' 
+
 
 # Tokenizing Sentences
 from nltk.tokenize import sent_tokenize 

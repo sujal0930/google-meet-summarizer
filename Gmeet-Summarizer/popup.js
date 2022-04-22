@@ -15,36 +15,36 @@ $("#download").on('click', function () {
 
     chrome.storage.sync.get(["script", "meet_code"], function (output) {
         const doc = new jsPDF();
-        // doc.setFillColor(221, 221, 221);
-        // doc.setLineWidth(1.5);
-        // doc.rect(0, 0, 220, 60, "F");
+        doc.setFillColor(221, 221, 221);
+        doc.setLineWidth(1.5);
+        doc.rect(0, 0, 220, 60, "F");
 
         // doc.addImage(imgData, 'PNG', 20, 6, 46, 46);
 
-        // doc.setLineWidth(1);
-        // doc.setDrawColor(255, 113, 113);
-        // doc.line(10, 60, 200, 60);
+        doc.setLineWidth(1);
+        doc.setDrawColor(255, 113, 113);
+        doc.line(10, 60, 200, 60);
 
-        // doc.setFontSize(37);
+        doc.setFontSize(37);
 
-        // doc.setFont('helvetica');
-        // doc.setFontType('bold');
-        // doc.text("Meet Script", 190, 28, "right");
+        doc.setFont('helvetica');
+        doc.setFontType('bold');
+        doc.text("Complete Lecture", 190, 28, "right");
 
-        // doc.setFontSize(17);
-        // doc.setFont('times');
-        // doc.setFontType('italic');
-        // var today = new Date();
-        // const options = {
-        //     weekday: 'long',
-        //     year: 'numeric',
-        //     month: 'long',
-        //     day: 'numeric'
-        // };
-        // var width = doc.getTextWidth('options');
-        // width = 147 - width;
-        // doc.text(today.toLocaleDateString(undefined, options), 190, 38, "right");
-        // doc.text(output.meet_code, 190, 45, "right");
+        doc.setFontSize(17);
+        doc.setFont('times');
+        doc.setFontType('italic');
+        var today = new Date();
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        var width = doc.getTextWidth('options');
+        width = 147 - width;
+        doc.text(today.toLocaleDateString(undefined, options), 190, 38, "right");
+        doc.text(output.meet_code, 190, 45, "right");
 
 
 
@@ -75,15 +75,48 @@ $("#download").on('click', function () {
             }
             y = y + 7;
         }
+        curr_date=today.toLocaleDateString(undefined, options);
+        doc.save(output.meet_code + " " + `${ curr_date }`  + "-lecture.pdf");
 
+    })
+})
+
+$("#summary").on('click', function () {
+
+    chrome.storage.sync.get(["script", "meet_code"], function (output) {
+        const doc = new jsPDF();
+        doc.setFillColor(221, 221, 221);
+        doc.setLineWidth(1.5);
+        doc.rect(0, 0, 220, 60, "F");
+
+        doc.setLineWidth(1);
+        doc.setDrawColor(255, 113, 113);
+        doc.line(10, 60, 200, 60);
+
+        doc.setFontSize(37);
+
+        doc.setFont('helvetica');
+        doc.setFontType('bold');
+        doc.text("Lecture Summary", 190, 28, "right");
+
+        doc.setFontSize(17);
+        doc.setFont('times');
+        doc.setFontType('italic');
         var today = new Date();
         const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-        
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        var width = doc.getTextWidth('options');
+        width = 147 - width;
+        doc.text(today.toLocaleDateString(undefined, options), 190, 38, "right");
+        doc.text(output.meet_code, 190, 45, "right");
+
+        doc.setFontSize(16);
+        var splitText = doc.splitTextToSize(output.script, 170);
+
         function postData(input) {
             $.support.cors = true;
             return $.ajax({
@@ -96,15 +129,37 @@ $("#download").on('click', function () {
         }
         async function getData(inputVal){
             var response = await postData(inputVal);
-            console.log(response);
+            var splitText = doc.splitTextToSize(response, 170);
+
+            var y = 70;
+    
+            for (var i = 0; i < splitText.length; i++) {
+                if (y > 280) {
+                    y = 10;
+                    doc.addPage();
+                }
+                var res = splitText[i].split(":");
+    
+                if (res.length > 1) {
+                    y = y + 5;
+                    var name = res[0].concat(" :");
+                    var width = doc.getTextWidth(name);
+                    var conversation = res[1];
+    
+                    doc.setFontType('bold');
+                    doc.text(10, y, name);
+                    doc.setFontType('normal');
+                    doc.text(15 + width, y, conversation);
+                } else {
+                    doc.text(30, y, splitText[i]);
+                }
+                y = y + 7;
+            }
+            curr_date=today.toLocaleDateString(undefined, options);
+            doc.save(output.meet_code + " " + `${ curr_date }`  + "-summary.pdf");
         }
-        // function callbackFunc(response) {
-        //     // do something with the response
-        //     console.log(response);
-        // }
         getData(splitText);
-        curr_date=today.toLocaleDateString(undefined, options);
-        doc.save(output.meet_code + " " + `${ curr_date }`  + ".pdf");
+        
 
     })
 })
